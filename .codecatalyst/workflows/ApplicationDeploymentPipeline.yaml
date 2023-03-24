@@ -1,0 +1,168 @@
+
+Name: ApplicationDeploymentPipeline
+SchemaVersion: "1.0"
+Triggers:
+  - Type: PUSH
+    Branches:
+      - main
+Actions:
+  Build:
+    Actions:
+      cdk_bootstrap:
+        Identifier: aws/cdk-bootstrap@v1
+        Inputs:
+          Sources:
+            - WorkflowSource
+        Configuration:
+          Region: us-east-2
+        Environment:
+          Name: development
+          Connections:
+            - Name: "733600996541"
+              Role: CodeCatalystPreviewDevelopmentAdministrator-hhj8d0
+      build_backend:
+        Identifier: aws/build@v1
+        Inputs:
+          Sources:
+            - WorkflowSource
+          Variables:
+            - Name: AWS_DEFAULT_REGION
+              Value: us-east-2
+            - Name: CDK_DEFAULT_ACCOUNT
+              Value: "733600996541"
+            - Name: CDK_DEFAULT_REGION
+              Value: us-east-2
+        Outputs:
+          AutoDiscoverReports:
+            Enabled: true
+            ReportNamePrefix: backend
+            IncludePaths:
+              - "**/*"
+            SuccessCriteria:
+              PassRate: 100
+              BranchCoverage: 50
+              LineCoverage: 70
+              Vulnerabilities:
+                Severity: CRITICAL
+          Artifacts:
+            - Name: backend
+              Files:
+                - "**/*"
+        Configuration:
+          Steps:
+            - Run: pip install -r requirements-dev.txt
+            - Run: PYTHONPATH=. coverage run --branch --omit "*/tests/**" -m pytest -k unit --junitxml=unitTests.xml
+            - Run: coverage xml
+        Environment:
+          Name: development
+          Connections:
+            - Name: "733600996541"
+              Role: CodeCatalystPreviewDevelopmentAdministrator-hhj8d0
+  Deploy_Backend:
+    Identifier: aws/cdk-deploy@v1
+    DependsOn:
+      - Build
+    Inputs:
+      Sources:
+        - WorkflowSource
+      Variables:
+        - Name: AWS_DEFAULT_REGION
+          Value: us-east-2
+        - Name: CDK_DEFAULT_ACCOUNT
+          Value: "733600996541"
+        - Name: CDK_DEFAULT_REGION
+          Value: us-east-2
+    Configuration:
+      StackName: mysfitshz0r6AppStack
+      Region: us-east-2
+      CfnOutputVariables: '["apiUrl"]'
+    Environment:
+      Name: development
+      Connections:
+        - Name: "733600996541"
+          Role: CodeCatalystPreviewDevelopmentAdministrator-hhj8d0
+  Tests:
+    DependsOn:
+      - Deploy_Backend
+    Actions:
+      integration_tests:
+        Identifier: aws/managed-test@v1
+        Inputs:
+          Sources:
+            - WorkflowSource
+          Variables:
+            - Name: API_ENDPOINT
+              Value: ${Deploy_Backend.apiUrl}
+        Outputs:
+          AutoDiscoverReports:
+            Enabled: true
+            ReportNamePrefix: backend
+            IncludePaths:
+              - "**/*"
+            SuccessCriteria:
+              PassRate: 100
+          Artifacts:
+            - Name: integration_test_results
+              Files:
+                - "**/*"
+        Configuration:
+          Steps:
+            - Run: pip install -r requirements-dev.txt
+            - Run: pytest -k integ --junitxml=integTests.xml
+        Environment:
+          Name: development
+          Connections:
+            - Name: "733600996541"
+              Role: CodeCatalystPreviewDevelopmentAdministrator-hhj8d0
+      build_and_test_frontend:
+        Identifier: aws/build@v1
+        Inputs:
+          Sources:
+            - WorkflowSource
+          Artifacts:
+            - backend
+          Variables:
+            - Name: VITE_API_ENDPOINT
+              Value: ${Deploy_Backend.apiUrl}
+        Outputs:
+          AutoDiscoverReports:
+            Enabled: true
+            ReportNamePrefix: frontend
+            IncludePaths:
+              - web/**/*
+            SuccessCriteria:
+              PassRate: 100
+              BranchCoverage: 50
+              LineCoverage: 70
+              Vulnerabilities:
+                Severity: CRITICAL
+          Artifacts:
+            - Name: frontEnd
+              Files:
+                - "**/*"
+        Configuration:
+          Steps:
+            - Run: cd web && npm install
+            - Run: CI=true npm run test:unit -- --reporter=junit --outputFile=unitTests.xml --coverage
+            - Run: npm run build-only
+        Environment:
+          Name: development
+          Connections:
+            - Name: "733600996541"
+              Role: CodeCatalystPreviewDevelopmentAdministrator-hhj8d0
+  Deploy_Frontend:
+    Identifier: aws/cdk-deploy@v1
+    DependsOn:
+      - Tests
+    Inputs:
+      Artifacts:
+        - frontEnd
+    Configuration:
+      Region: us-east-2
+      StackName: mysfitshz0r6WebStack
+      CfnOutputVariables: '["endpointUrl"]'
+    Environment:
+      Name: development
+      Connections:
+        - Name: "733600996541"
+          Role: CodeCatalystPreviewDevelopmentAdministrator-hhj8d0

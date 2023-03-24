@@ -1,0 +1,8 @@
+aws-cdk-lib==2.43.0
+constructs>=10.0.0,<11.0.0
+Jinja2==3.1.2
+aws-cdk.aws-apigatewayv2-alpha==2.43.0a0
+aws-cdk.aws-apigatewayv2-integrations-alpha==2.43.0a0
+aws-cdk.aws-lambda-python-alpha==2.43.0a0
+simplejson==3.17.6
+boto3~=1.16.0

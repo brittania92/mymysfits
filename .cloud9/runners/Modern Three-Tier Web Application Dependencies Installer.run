@@ -1,0 +1,13 @@
+{
+  "script": [
+    "for directory in /projects/* ; do",
+    "  if [ -d \"$directory/.cloud9/runners\" ]; then",
+    "    REPOSITORY_DIR=$directory",
+    "  fi",
+    "done",
+    "echo $REPOSITORY_DIR",
+    "cd $REPOSITORY_DIR",
+    "python3 -m pip install -r requirements-dev.txt"
+  ],
+  "info": "This runner will install dependencies for local development."
+}

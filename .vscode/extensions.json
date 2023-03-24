@@ -1,0 +1,8 @@
+{
+    "recommendations": [
+        "ms-python.python",
+        "Vue.volar",
+        "Vue.vscode-typescript-vue-plugin",
+        "amazonwebservices.aws-toolkit-vscode"
+    ]
+}

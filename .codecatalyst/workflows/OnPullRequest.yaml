@@ -1,0 +1,35 @@
+
+Name: OnPullRequest
+SchemaVersion: "1.0"
+Triggers:
+  - Type: PULLREQUEST
+    Branches:
+      - main
+    Events:
+      - OPEN
+      - REVISION
+Actions:
+  codeguru_codereview:
+    Identifier: aws/build@v1
+    Inputs:
+      Sources:
+        - WorkflowSource
+      Variables:
+        - Name: AWS_DEFAULT_REGION
+          Value: us-east-2
+    Outputs:
+      Artifacts:
+        - Name: codereview
+          Files:
+            - ./code-guru/*
+    Configuration:
+      Steps:
+        - Run: curl -OL https://github.com/aws/aws-codeguru-cli/releases/download/0.2.3/aws-codeguru-cli.zip
+        - Run: unzip aws-codeguru-cli.zip
+        - Run: export PATH=$PATH:./aws-codeguru-cli/bin
+        - Run: aws-codeguru-cli --root-dir ./src --no-prompt --region us-east-2
+    Environment:
+      Name: development
+      Connections:
+        - Name: "733600996541"
+          Role: CodeCatalystPreviewDevelopmentAdministrator-hhj8d0

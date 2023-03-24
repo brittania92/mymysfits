@@ -1,0 +1,53 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "python: test",
+            "detail": "python test",
+            "type": "shell",
+            "command": "pytest",
+            "group": "test",
+            "problemMatcher": []
+        },
+        {
+            "label": "web: run",
+            "detail": "web: run",
+            "type": "npm",
+            "script": "dev",
+            "isBackground": true,
+            "problemMatcher": {
+                "pattern": {
+                    "regexp": "."
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".",
+                    "endsPattern": "Local:"
+                }
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/web"
+            }
+        },
+        {
+            "label": "web: build",
+            "detail": "web: build",
+            "type": "npm",
+            "group": "build",
+            "script": "build",
+            "options": {
+                "cwd": "${workspaceFolder}/web"
+            }
+        },
+        {
+            "label": "web: test",
+            "detail": "web: test",
+            "group": "test",
+            "type": "npm",
+            "script": "test:unit",
+            "options": {
+                "cwd": "${workspaceFolder}/web"
+            }
+        },
+    ]
+}

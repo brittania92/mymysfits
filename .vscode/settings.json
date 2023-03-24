@@ -1,0 +1,15 @@
+{
+    "remote.portsAttributes": {
+        "5173": {
+            "label": "Vue Application",
+        }
+    },
+    "remote.SSH.defaultForwardedPorts": [
+        {
+            "localPort": 5173,
+            "name": "Vue Application Port",
+            "remotePort": 5173
+        }
+    ],
+    "python.defaultInterpreterPath": "python"
+}
