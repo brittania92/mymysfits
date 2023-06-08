@@ -1,4 +1,4 @@
-# Mystical Mysfits
+# Mythical Mysfits
 
 This project includes sample code in your desired programming language and front-end framework to build and deploy a well-architected 3-tier modern web application.  This blueprint was inspired [Mythical Mysfits website](https://mythicalmysfits.com/). Mythical Mysfits have been used in several public [AWS workshops](https://workshops.aws/) and [Game Days](https://aws.amazon.com/gameday/).  These workshops and game days seek to educate and demonstrate to our customers what is possible on AWS; through this Blueprint we seek to do the same.  
 
